@@ -1,4 +1,4 @@
-export interface Contact {
+export interface ContactResponse {
     id: string;
     name: string;
     phone: string;
@@ -6,4 +6,4 @@ export interface Contact {
     image: string;
 }
 
-export type ApiContact = Omit<Contact, 'id'>;
+export type ApiContactResponse = Omit<Contact, 'id'>;
