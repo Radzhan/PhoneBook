@@ -12,15 +12,10 @@ interface Props {
 const ContactCard: React.FC<Props> = ({ image, name, index }) => {
     const dispatch = useAppDispatch();
     const contacts = useAppSelector((state: RootState) => state.contact.contacts);
-
-    const setContact = (index: number) => {
-        dispatch(changeContact(contacts[index]));
-    };
-
     
-    const change = (index: number) => {
-        setContact(index);
-        dispatch(changeClass());
+    const change = async (index: number) => {
+        await dispatch(changeContact(contacts[index]));
+        await dispatch(changeClass());
     };
 
     return (

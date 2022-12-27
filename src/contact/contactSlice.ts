@@ -5,7 +5,8 @@ import { ApiContactResponse, ContactResponse } from "../types";
 interface ContactState {
     contacts: ContactResponse[];
     contact: ContactResponse;
-    display: string
+    display: string;
+    onDelete: boolean;
 }
 
 const initialState: ContactState = {
@@ -17,8 +18,15 @@ const initialState: ContactState = {
         email: '',
         image: '',
     },
-    display: 'none'
+    display: 'none',
+    onDelete: false,
 };
+
+interface forObject {
+    id: string;
+    item: ApiContactResponse;
+
+}
 
 export const createContact = createAsyncThunk<void, ApiContactResponse>('contact/create', async (arg) => {
     await axiosApi.post('/contacts.json', arg);
@@ -26,8 +34,16 @@ export const createContact = createAsyncThunk<void, ApiContactResponse>('contact
 
 export const getContact = createAsyncThunk('contact/get', async () => {
     const response = await axiosApi.get('/contacts.json');
-    return response.data;
+    return response.data ?? [];
 });
+
+export const deleteContact = createAsyncThunk<void, string>('contact/delete', async (id) => {
+    await axiosApi.delete('/contacts/' + id + '.json');
+});
+
+export const changingContact = createAsyncThunk<void, forObject>('contact/change', async (object) => {
+    await axiosApi.put('/contacts/' + object.id + '.json', object.item)
+})
 
 export const contactSlice = createSlice({
     name: 'contact',
@@ -55,9 +71,30 @@ export const contactSlice = createSlice({
                 })
             })
         })
+        builder.addCase(changingContact.fulfilled, (state) => {
+            state.display = 'none'
+        })
+        builder.addCase(deleteContact.pending, (state) => {
+            state.onDelete = true
+        })
+        builder.addCase(deleteContact.fulfilled, (state) => {
+            state.onDelete = false;
+        })
+        builder.addCase(deleteContact.rejected, (state) => {
+            state.onDelete = false
+        })
+        builder.addCase(createContact.pending, (state) => {
+            state.onDelete = true
+        })
+        builder.addCase(createContact.fulfilled, (state) => {
+            state.onDelete = false;
+        })
+        builder.addCase(createContact.rejected, (state) => {
+            state.onDelete = false
+        })
     }
 });
 
 export const contactReduser = contactSlice.reducer;
-export const { changeClass , changeContact } = contactSlice.actions;
+export const { changeClass, changeContact } = contactSlice.actions;
 export const allContacts = (state: RootState) => state.contact.contacts;

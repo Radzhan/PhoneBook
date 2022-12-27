@@ -17,6 +17,9 @@ function App() {
         <Route path='/new-contact' element={(
           <NewContact/>
         )}/>
+        <Route path='/edit/:id' element={(
+          <NewContact/>
+        )}/>
         <Route path='*' element={(<h2>NOT FOUND!</h2>)}/>
       </Routes>
     </div>
